@@ -31,9 +31,7 @@ export class ProductAPI extends Api implements IProductAPI {
 		);
 	}
 
-    orderProduct(order: IOrder): Promise<IOrderResult> {
-        return this.post('/order', order).then(
-            (data: IOrderResult) => data
-        );
-    } 
+	orderProduct(order: IOrder): Promise<IOrderResult> {
+		return this.post('/order', order).then((data: IOrderResult) => data);
+	}
 }
