@@ -1,17 +1,10 @@
 import { Component } from './base/Component';
 import { IProductItem } from '../types';
 import { bem, createElement, ensureElement } from '../utils/utils';
-/* import clsx from "clsx"; */
 
 interface ICardActions {
 	onClick: (event: MouseEvent) => void;
 }
-
-/* export interface ICard {
-    title: string;
-    description?: string | string[];
-    image: string;
-} */
 
 export class Card<T extends IProductItem | {}> extends Component<T | IProductItem> {
 	protected _title: HTMLElement;
