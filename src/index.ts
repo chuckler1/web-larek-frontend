@@ -52,7 +52,7 @@ events.on('items:changed', () => {
 		});
 	});
 
-	page.counter = appData.order.items.length;
+	page.counter = appData.order.items.length; // Обновляем счетчик в хедере
 });
 
 // Открыть превью
@@ -65,8 +65,8 @@ events.on('card:select', (item: IProductItem) => {
                   const button = event.target as HTMLButtonElement;
                   if (button.textContent === 'Купить') {
                     button.textContent = 'В Корзину'; // Меняем текст кнопки
-                    appData.toggleOrderedLot(item.id, true); // Добавлем id заказа в поле appData.order.items
-                    page.counter = appData.order.items.length;
+                    appData.toggleOrderedItem(item.id, true); // Добавлем id заказа в поле appData.order.items
+                    page.counter = appData.order.items.length; // Обновляем счетчик в хедере
                   } else if (button.textContent === 'В Корзину') {
                     events.emit('basket:open', item);
                   }
@@ -95,9 +95,11 @@ events.on('basket:open', () => {
   basket.items = appData.getCards().map((item, i) => {
     const card = new BasketItem(cloneTemplate(basketCardTemplate), {
       onClick: () => { // Обработчик удаления из корзины заказа
-        appData.toggleOrderedLot(item.id, false);
+        appData.toggleOrderedItem(item.id, false);
         page.counter = appData.order.items.length;
-        basket.items = basket.items.filter(i => i.dataset.id !== item.id);
+        basket.items = basket.items.filter(i => i.dataset.id !== item.id); // Удаляем из корзины
+        basket.total = appData.getTotal(); // Обновляем стоимость
+        basket.selected = appData.order.items; // Обновляем состояние кнопки
       }
     });
     return card.render({
@@ -141,7 +143,8 @@ events.on('contacts:open', () => {
 events.on('order:submit', () => {
   api.orderProduct(appData.order)
       .then((result) => {
-          appData.clearBasket();
+          appData.clearBasket(); // Очищаем корзину
+          page.counter = appData.order.items.length; // Обновляем счетчик
           const success = new Success(cloneTemplate(successTemplate), {
               onClick: () => {
                   modal.close();
@@ -186,6 +189,7 @@ events.on('modal:open', () => {
 events.on('modal:close', () => {
     page.locked = false;
 });
+
 // Получаем заказы с сервера
 api
 	.getProductList()

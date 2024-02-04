@@ -9,7 +9,6 @@ export interface IProductItem { // Структура карточки
 
 export interface IAppState { // Слой данных приложения
 	catalog: IProductItem[];
-	basket: string[];
 	order: IOrder | null;
 }
 

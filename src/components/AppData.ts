@@ -19,7 +19,6 @@ export class ProductItem extends Model<IProductItem> {
 }
 
 export class AppState extends Model<IAppState> {
-	basket: string[];
 	catalog: ProductItem[];
 	order: IOrder = {
 		email: '',
@@ -32,7 +31,7 @@ export class AppState extends Model<IAppState> {
 	formOrderErrors: FormOrderErrors = {};
 	formContactsErrors: FormContactsErrors = {};
 
-	toggleOrderedLot(id: string, isIncluded: boolean) {
+	toggleOrderedItem(id: string, isIncluded: boolean) {
         if (isIncluded) {
             this.order.items = _.uniq([...this.order.items, id]);
         } else {
@@ -42,7 +41,7 @@ export class AppState extends Model<IAppState> {
 
     clearBasket() {
         this.order.items.forEach(id => {
-            this.toggleOrderedLot(id, false);
+            this.toggleOrderedItem(id, false);
         });
     }
 
@@ -66,16 +65,12 @@ export class AppState extends Model<IAppState> {
         this.order[field] = value;
     
         if (field === 'address' || field === 'payment') {
-            if (this.validateOrder()) {
-                this.events.emit('order:ready', this.order);
-            }
+            this.validateOrder()
         }
-        
+
         if (field === 'email' || field === 'phone') {
-            if (this.validateContacts()) {
-                this.events.emit('contacts:ready', this.order);
-            }
-        }
+            this.validateContacts()
+        }        
     }
 
     validateOrder() {
