@@ -79,11 +79,24 @@ yarn build
 ## Класс AppState
 
   Является дочерним класса Model, имеет поля *catalog* - для хранения единиц товара, реализованные инстансом 
-класса ***ProductItem***, *order* - сохраняет даныые при оформлении заказа, *formOrderErrors* и *formContactsErrors* -
-- хранит сообщения ошибки валидации.
-
+класса ***ProductItem***, *order* - сохраняет данные при оформлении заказа, *formOrderErrors* и *formContactsErrors* -
+хранит сообщения ошибок.
   Работает с такими методами, как **toggleOrderedItem** - для записи или удаления в/из order id заказов,
 **clearBasket** - для очистки корзины, полного удаления всех id из order, **getTotal** - для вычисления 
 суммы товаров, **setCatalog** - для занесения в каталог единиц товара, приходящих с API, также инициирует
 событие рендеринга всех карт на странице, **getCards** - получаем массив из единиц товара, **setOrderField** -
 принимет данные из форм и запускает методы валидации - **validateOrder** и **validateContacts**.
+
+# Компонент представления
+
+## Класс ProductAPI
+
+  Дочерний класс Api, работает с запросами и ответами сервера. 
+Имеет интерфейс: 
+```
+export interface IProductAPI {
+	getProductList: () => Promise<IProductItem[]>; // для получения списка товаров
+	getProductItem: (id: string) => Promise<IProductItem>; // для получения единицы товара
+	orderProduct: (order: IOrder) => Promise<IOrderResult>; // для отправки данных оформленного товара
+}
+```
