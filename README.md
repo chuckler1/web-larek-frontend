@@ -117,3 +117,50 @@ export interface IProductAPI {
 - **Form** - для отображения элементов формы
 - **Order** и **Contacts** - для отображения окон заказа и контактов
 - **Success** - для отображения окна успешного оформления заказа
+
+# Типы данных
+
+```
+// Структура карточки заказа
+export interface IProductItem {
+	id: string; // id заказа
+	category: string; // категория Софт-скил, Хард-скил...
+	title: string; // Наименование заказа
+	description?: string; // Описание, идет в превью
+	image: string; // Изображение заказа
+	price: number | string; // Его цена
+}
+
+// Слой данных приложения
+export interface IAppState {
+	catalog: IProductItem[]; // Хранит данные заказов
+	order: IOrder | null; // Хранит данные заказов, попавших в корзину
+}
+
+// Ошибки в форме заказа
+export type FormOrderErrors = {
+	address?: string; // Инпут адреса
+	payment?: string; // Способ оплаты
+};
+
+// Ошибки в форме контактов
+export type FormContactsErrors = {
+	email?: string; // Почта
+	phone?: string; // Телефон
+};
+
+// Структура формы
+export interface IOrderForm extends FormOrderErrors, FormContactsErrors {}
+
+// Структура заказа
+export interface IOrder extends IOrderForm {
+	items: string[]; // id заказов в корзине
+	total: number; // Их сумма
+}
+
+// Результат оформления заказа приходящий с API
+export interface IOrderResult {
+	id: string;
+	total: number;
+}
+```
