@@ -16,12 +16,7 @@ export interface IAppState {
 
 export interface IOrderForm
 	extends FormOrderErrors,
-		FormContactsErrors {} /* { // Структура формы
-	email: string;
-	phone: string;
-	address: string;
-	payment: string;
-} */
+		FormContactsErrors {} // Структура формы
 
 export interface IOrder extends IOrderForm {
 	// Структура заказа
