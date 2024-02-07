@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { Model } from './base/Model';
 import {
 	FormOrderErrors,
@@ -9,17 +8,8 @@ import {
 	IOrderForm,
 } from '../types';
 
-export class ProductItem extends Model<IProductItem> {
-	id: string;
-	category: string;
-	title: string;
-	description?: string;
-	image: string;
-	price: number;
-}
-
 export class AppState extends Model<IAppState> {
-	catalog: ProductItem[];
+	catalog: IProductItem[];
 	order: IOrder = {
 		email: '',
 		phone: '',
@@ -33,9 +23,11 @@ export class AppState extends Model<IAppState> {
 
 	toggleOrderedItem(id: string, isIncluded: boolean) {
 		if (isIncluded) {
-			this.order.items = _.uniq([...this.order.items, id]);
+			if (!this.order.items.includes(id)) {
+				this.order.items.push(id);
+			}
 		} else {
-			this.order.items = _.without(this.order.items, id);
+			this.order.items = this.order.items.filter((it) => it !== id);
 		}
 	}
 
@@ -43,22 +35,33 @@ export class AppState extends Model<IAppState> {
 		this.order.items.forEach((id) => {
 			this.toggleOrderedItem(id, false);
 		});
+		// Очищаем поля формы
+		this.clearOrderFields();
+		// Обновляем корзину
+		this.emitChanges('basket:changed', { order: this.order });
 	}
 
 	getTotal() {
 		return (this.order.total = this.order.items.reduce(
-			(a, c) => a + this.catalog.find((it) => it.id === c).price,
+			(a, c) => a + Number(this.catalog.find((it) => it.id === c).price),
 			0
 		));
 	}
 
 	setCatalog(items: IProductItem[]) {
-		this.catalog = items.map((item) => new ProductItem(item, this.events));
+		this.catalog = items;
 		this.emitChanges('items:changed', { catalog: this.catalog });
 	}
 
-	getCards(): ProductItem[] {
+	getCards(): IProductItem[] {
 		return this.catalog.filter((item) => this.order.items.includes(item.id));
+	}
+
+	clearOrderFields() {
+		this.order.email = '';
+		this.order.address = '';
+		this.order.payment = '';
+		this.order.phone = '';
 	}
 
 	setOrderField(field: keyof IOrderForm, value: string) {

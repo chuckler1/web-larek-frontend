@@ -43,9 +43,5 @@
     "lint:fix": "npm run lint -- --fix",
     "format": "prettier ./src --write",
     "deploy": "gh-pages -d dist"
-  },
-  "dependencies": {
-    "@types/lodash": "^4.14.202",
-    "lodash": "^4.17.21"
   }
 }

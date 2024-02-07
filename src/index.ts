@@ -5,7 +5,8 @@ import { CDN_URL, API_URL } from './utils/constants';
 import { cloneTemplate, createElement, ensureElement } from './utils/utils';
 import { AppState } from './components/AppData';
 import { Page } from './components/Page';
-import { Card, BasketItem } from './components/Card';
+import { Card } from './components/Card';
+import { BasketItem } from './components/BasketItem';
 import { Modal } from './components/common/Modal';
 import { IProductItem, IOrderForm } from './types/index';
 import { Basket } from './components/common/Basket';
@@ -51,8 +52,6 @@ events.on('items:changed', () => {
 			category: item.category,
 		});
 	});
-
-	page.counter = appData.order.items.length; // Обновляем счетчик в хедере
 });
 
 // Открыть превью
@@ -69,15 +68,14 @@ events.on('card:select', (item: IProductItem) => {
 							button.textContent = 'В Корзину'; // Меняем текст кнопки
 							appData.toggleOrderedItem(result.id, true); // Добавлем id заказа в поле appData.order.items
 							page.counter = appData.order.items.length; // Обновляем счетчик в хедере
+							events.emit('basket:changed');
 						} else if (button.textContent === 'В Корзину') {
 							events.emit('basket:open', item);
 						}
 					},
 				});
 
-				const textButton = appData.order.items.includes(result.id)
-					? 'В Корзину'
-					: 'Купить';
+				card.isCartEmpty(appData.order.items.includes(result.id)); // Проверяем наличие в корзине
 
 				modal.render({
 					content: card.render({
@@ -85,8 +83,7 @@ events.on('card:select', (item: IProductItem) => {
 						image: result.image,
 						description: result.description,
 						price: result.price,
-						category: result.category,
-						textButton: textButton,
+						category: result.category
 					}),
 				});
 			})
@@ -98,8 +95,8 @@ events.on('card:select', (item: IProductItem) => {
 	}
 });
 
-// Открыть корзину
-events.on('basket:open', () => {
+// Изменились элементы корзины
+events.on('basket:changed', () => {
 	basket.items = appData.getCards().map((item, i) => {
 		const card = new BasketItem(cloneTemplate(basketCardTemplate), {
 			onClick: () => {
@@ -118,8 +115,13 @@ events.on('basket:open', () => {
 			index: i + 1,
 		});
 	});
+	page.counter = appData.order.items.length;
 	basket.total = appData.getTotal();
 	basket.selected = appData.order.items;
+})
+
+// Открыть корзину
+events.on('basket:open', () => {
 	modal.render({
 		content: basket.render(),
 	});
@@ -129,7 +131,7 @@ events.on('basket:open', () => {
 events.on('order:open', () => {
 	modal.render({
 		content: order.render({
-			address: '',
+			address: appData.order.address,
 			valid: false,
 			errors: [],
 		}),
@@ -140,8 +142,8 @@ events.on('order:open', () => {
 events.on('contacts:open', () => {
 	modal.render({
 		content: contacts.render({
-			email: '',
-			phone: '',
+			email: appData.order.email,
+			phone: appData.order.phone,
 			valid: false,
 			errors: [],
 		}),
@@ -154,7 +156,6 @@ events.on('order:submit', () => {
 		.orderProduct(appData.order)
 		.then((result) => {
 			appData.clearBasket(); // Очищаем корзину
-			page.counter = appData.order.items.length; // Обновляем счетчик
 			const success = new Success(cloneTemplate(successTemplate), {
 				onClick: () => {
 					modal.close();

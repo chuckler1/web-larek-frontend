@@ -2,7 +2,7 @@ import { Component } from './base/Component';
 import { IProductItem } from '../types';
 import { bem, createElement, ensureElement } from '../utils/utils';
 
-interface ICardActions {
+export interface ICardActions {
 	onClick: (event: MouseEvent) => void;
 }
 
@@ -41,6 +41,12 @@ export class Card<T extends IProductItem | {}> extends Component<
 				container.addEventListener('click', actions.onClick);
 			}
 		}
+	}
+
+	public isCartEmpty(value: boolean) {
+		return value
+			? this.setText(this._buttonModal, 'В Корзину')
+			: this.setText(this._buttonModal, 'Купить');
 	}
 
 	set id(value: string) {
@@ -101,33 +107,5 @@ export class Card<T extends IProductItem | {}> extends Component<
 		} else {
 			this.setText(this._description, value);
 		}
-	}
-
-	set textButton(value: string) {
-		this.setText(this._buttonModal, value);
-	}
-}
-
-export type BasketItemIndex = {
-	index: number;
-};
-
-export class BasketItem extends Card<BasketItemIndex> {
-	protected _index: HTMLElement;
-	protected _button?: HTMLButtonElement;
-
-	constructor(container: HTMLElement, actions?: ICardActions) {
-		super('card', container);
-
-		this._index = container.querySelector('.basket__item-index');
-		this._button = container.querySelector('.basket__item-delete');
-
-		if (this._button) {
-			this._button.addEventListener('click', actions.onClick);
-		}
-	}
-
-	set index(value: number) {
-		this.setText(this._index, value);
 	}
 }
