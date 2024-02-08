@@ -132,7 +132,7 @@ events.on('order:open', () => {
 	modal.render({
 		content: order.render({
 			address: appData.order.address,
-			valid: false,
+			valid: appData.isFilledFieldsOrder(),
 			errors: [],
 		}),
 	});
@@ -144,7 +144,7 @@ events.on('contacts:open', () => {
 		content: contacts.render({
 			email: appData.order.email,
 			phone: appData.order.phone,
-			valid: false,
+			valid: appData.isFilledFieldsContacts(),
 			errors: [],
 		}),
 	});

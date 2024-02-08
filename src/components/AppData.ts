@@ -56,6 +56,14 @@ export class AppState extends Model<IAppState> {
 	getCards(): IProductItem[] {
 		return this.catalog.filter((item) => this.order.items.includes(item.id));
 	}
+	// Проверка заполненности полей формы
+	isFilledFieldsOrder(): boolean {
+		return !!this.order.address && !!this.order.payment;
+	}
+ // Проверка заполненности полей формы
+	isFilledFieldsContacts(): boolean {
+		return !!this.order.email && !!this.order.phone;
+	}
 
 	clearOrderFields() {
 		this.order.email = '';
